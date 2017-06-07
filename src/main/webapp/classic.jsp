@@ -5,7 +5,6 @@
     String getDate() {
         return new java.util.Date().toString();
     }
-
     int count = 10;
 %>
 <html>
@@ -29,12 +28,12 @@
                 }
                 out.println("<tr style=\"background:" + color + ";\"><td>-</td><tr>");
             }
-        %>
+        %> <%--小脚本--%>
     </table>
     <hr/>
     当前的时间是：
     <br>
-    <%--下面是使用表达式的例子 --%>
+    <%--下面是使用表达式的例子 --%>  <%-- jsp隐藏注释--%>
     <%=getDate()%>
 </div>
 </body>
