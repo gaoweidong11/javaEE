@@ -16,3 +16,5 @@ CREATE TABLE db_javaee.user (
 
 SELECT *
 FROM db_javaee.user;
+
+TRUNCATE TABLE db_javaee.user;
