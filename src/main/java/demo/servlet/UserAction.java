@@ -15,15 +15,29 @@ import java.sql.SQLException;
 import java.util.Arrays;
 
 /**
- * Created by 高伟冬 on 2017/6/9.
+ * Created by 高伟冬 on 2017/6/12.
  * javaEE
- * 11:52
- * 星期五
+ * 9:06
+ * 星期一
  */
-@WebServlet(urlPatterns = "/register")
-public class RegisterServlet extends HttpServlet {
+@WebServlet(urlPatterns = "/user")
+public class UserAction extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String action = req.getParameter("action");
+        System.out.println(action);
+        if (action.equals("register")) {
+            register(req, resp);
+        }
+        if (action.equals("login")) {
+            login(req, resp);
+        }
+        if (action.equals("logout")) {
+            logout(req, resp);
+        }
+    }
+
+    private void register(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         System.out.println("doPost...");
 //        super.doPost(req, resp);
         String nick = req.getParameter("nick").trim();
@@ -31,7 +45,7 @@ public class RegisterServlet extends HttpServlet {
         String password = req.getParameter("password");
 
         if (nick.length() == 0 || mobile.length() == 0 || password.length() == 0) {
-            req.setAttribute("message", "....");
+            req.setAttribute("message", "昵称&手机号&密码不能为空");
             req.getRequestDispatcher("signup.jsp").forward(req, resp);
         }
 
@@ -80,5 +94,46 @@ public class RegisterServlet extends HttpServlet {
         } finally {
             Db.close(resultSet, statement, connection);
         }
+    }
+
+    private void logout(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.getSession().invalidate();
+        resp.sendRedirect("index.jsp");
+    }
+
+    private void login(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String mobile = req.getParameter("mobile");
+        String password = req.getParameter("password");
+
+        Connection connection = Db.getConnection();
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            String sql = "SELECT * FROM db_javaee.user WHERE mobile=? AND password=?";
+            if (connection != null) {
+                statement = connection.prepareStatement(sql);
+            } else {
+                return;
+            }
+            statement.setString(1, mobile);
+            statement.setString(2, password);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                req.getSession().setAttribute("nick", resultSet.getString("nick"));
+                req.getRequestDispatcher("home.jsp").forward(req, resp);
+            } else {
+                req.setAttribute("message", "手机号或密码错误");
+                req.getRequestDispatcher("index.jsp").forward(req, resp);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            Db.close(resultSet, statement, connection);
+        }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doPost(req, resp);
     }
 }

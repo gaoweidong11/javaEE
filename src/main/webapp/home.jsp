@@ -26,6 +26,6 @@
 <%=pageContext.getAttribute("key")%>
 <%=application.getAttribute("app-key")%>
 
-<p><a href="logout.jsp">注销</a></p>
+<p><a href="user">注销</a></p>
 </body>
 </html>

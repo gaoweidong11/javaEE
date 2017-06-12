@@ -12,19 +12,20 @@
 </head>
 <body>
 <h1>注册<%=session.getId()%></h1>
-<form action="register.jsp" method="post">
+<form action="user" method="post">
+    <input type="hidden" name="action" value="register">
     <input type="text" name="nick" placeholder="昵称"><br>
     <input type="text" name="mobile" placeholder="手机号"><br>
     <input type="password" name="password" placeholder="密码"><br>
-    hobbies：
+    爱好：
     <input type="checkbox" name="hobbies" value="TV">TV
     <input type="checkbox" name="hobbies" value="Movie">Movie
     <input type="checkbox" name="hobbies" value="Game">Game<br>
-    cities：
-    <select name="cities" multiple>
+    城市：
+    <select name="cities" >
         <option value="Beijing">Beijing</option>
         <option value="Shanghai">Shanghai</option>
-        <option value="Shenzhen">Shenzhen</option>
+        <option value="guangzhou">guangzhou</option>
     </select><br>
     <input type="submit" value="注册">
 </form>
