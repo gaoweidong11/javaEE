@@ -35,6 +35,8 @@ public class UserAction extends HttpServlet {
         if (action.equals("logout")) {
             logout(req, resp);
         }
+        req.setAttribute("message", "出现了一点问题。。。");
+        req.getRequestDispatcher("default.jsp").forward(req, resp);
     }
 
     private void register(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -79,7 +81,7 @@ public class UserAction extends HttpServlet {
                 req.setAttribute("message", "手机号已经存在");
                 req.getRequestDispatcher("signup.jsp").forward(req, resp);
             } else {
-                String sql = "INSERT INTO db_javaee.user VALUE (NULL ,?,?,?,?,?)";
+                String sql = "INSERT INTO db_javaee.user VALUE (NULL ,?,?,?)";
                 statement = connection.prepareStatement(sql);
                 statement.setString(1, nick);
                 statement.setString(2, mobile);
@@ -87,18 +89,13 @@ public class UserAction extends HttpServlet {
                 statement.setString(4, Arrays.toString(hobbies));
                 statement.setString(5, Arrays.toString(cities));
                 statement.executeUpdate();
-                resp.sendRedirect("index.jsp");
+                resp.sendRedirect("default.jsp");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             Db.close(resultSet, statement, connection);
         }
-    }
-
-    private void logout(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.getSession().invalidate();
-        resp.sendRedirect("index.jsp");
     }
 
     private void login(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -109,7 +106,7 @@ public class UserAction extends HttpServlet {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            String sql = "SELECT * FROM db_javaee.user WHERE mobile=? AND password=?";
+            String sql = "SELECT * FROM  db_javaee.user WHERE mobile=? AND password=?";
             if (connection != null) {
                 statement = connection.prepareStatement(sql);
             } else {
@@ -120,10 +117,10 @@ public class UserAction extends HttpServlet {
             resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 req.getSession().setAttribute("nick", resultSet.getString("nick"));
-                req.getRequestDispatcher("home.jsp").forward(req, resp);
+                resp.sendRedirect("student?action=queryAll");
             } else {
                 req.setAttribute("message", "手机号或密码错误");
-                req.getRequestDispatcher("index.jsp").forward(req, resp);
+                req.getRequestDispatcher("default.jsp").forward(req, resp);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -132,7 +129,12 @@ public class UserAction extends HttpServlet {
         }
     }
 
-    @Override
+
+    private void logout(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.getSession().invalidate();
+        resp.sendRedirect("default.jsp");
+    }
+        @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         doPost(req, resp);
     }

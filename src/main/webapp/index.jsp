@@ -4,7 +4,7 @@
     <title>index page</title>
 </head>
 <body>
-<h1>登录<%=session.getId()%></h1>
+<h1>登录</h1>
 <form action="user" method="post">
     <input type="hidden" name="action" value="login">
     <input type="text" name="mobile" placeholder="手机号"><br>
