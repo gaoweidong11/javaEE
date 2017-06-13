@@ -2,6 +2,11 @@
 <html>
 <head>
     <title>index page</title>
+    <script>
+        function del() {
+            return confirm('DEL?')
+        }
+    </script>
 </head>
 <body>
 <h1>登录</h1>

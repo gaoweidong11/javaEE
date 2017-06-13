@@ -47,12 +47,8 @@ public class StudentAction extends HttpServlet {
             remove(req, resp);
             return;
         }
-        req.setAttribute("message", "出现了一点问题");
-        req.getRequestDispatcher("default.jap").forward(req, resp);
-
-
         req.setAttribute("message", "出现一点问题。。");
-        req.getRequestDispatcher("index.jsp").forward(req, resp);
+        req.getRequestDispatcher("default.jsp").forward(req, resp);
     }
 
     private void add(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -63,7 +59,7 @@ public class StudentAction extends HttpServlet {
         Connection connection = Db.getConnection();
         PreparedStatement preparedStatement = null;
 
-        String sql = "select * from db_javaee.student ORDER BY  id;";
+        String sql = "INSERT INTO db_javaee.student VALUE(null,?,?,?)";
         try {
             if (connection != null) {
                 preparedStatement = connection.prepareStatement(sql);
@@ -78,7 +74,7 @@ public class StudentAction extends HttpServlet {
 
             preparedStatement.executeUpdate();
 
-            resp.sendRedirect("student?action=qureyAll");
+            resp.sendRedirect("student?action=queryAll");
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -90,7 +86,7 @@ public class StudentAction extends HttpServlet {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
-        String sql = "";
+        String sql = "SELECT * FROM db_javaee.student ORDER BY id;";
 
         try {
         if (connection != null) {
@@ -127,7 +123,7 @@ public class StudentAction extends HttpServlet {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
-        String sql = "";
+        String sql = "SELECT * FROM db_javaee.student ORDER BY id = ?;";
         try {
         if (connection != null) {
                 preparedStatement = connection.prepareStatement(sql);

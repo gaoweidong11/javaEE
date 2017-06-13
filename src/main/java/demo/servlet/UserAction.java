@@ -12,7 +12,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 
 /**
  * Created by 高伟冬 on 2017/6/12.
@@ -25,34 +24,32 @@ public class UserAction extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String action = req.getParameter("action");
-        System.out.println(action);
-        if (action.equals("register")) {
+        if ("register".equals(action)) { // action.equals NPE
             register(req, resp);
+            return;
         }
-        if (action.equals("login")) {
+        if ("login".equals(action)) {
             login(req, resp);
+            return;
         }
-        if (action.equals("logout")) {
+        if ("logout".equals(action)) {
             logout(req, resp);
+            return;
         }
+
         req.setAttribute("message", "出现了一点问题。。。");
         req.getRequestDispatcher("default.jsp").forward(req, resp);
     }
 
     private void register(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("doPost...");
-//        super.doPost(req, resp);
         String nick = req.getParameter("nick").trim();
         String mobile = req.getParameter("mobile").trim();
         String password = req.getParameter("password");
 
         if (nick.length() == 0 || mobile.length() == 0 || password.length() == 0) {
-            req.setAttribute("message", "昵称&手机号&密码不能为空");
+            req.setAttribute("message", "....");
             req.getRequestDispatcher("signup.jsp").forward(req, resp);
         }
-
-        String[] hobbies = req.getParameterValues("hobbies");
-        String[] cities = req.getParameterValues("cities");
 
         Connection connection = Db.getConnection();
         PreparedStatement statement = null;
@@ -86,8 +83,6 @@ public class UserAction extends HttpServlet {
                 statement.setString(1, nick);
                 statement.setString(2, mobile);
                 statement.setString(3, password);
-                statement.setString(4, Arrays.toString(hobbies));
-                statement.setString(5, Arrays.toString(cities));
                 statement.executeUpdate();
                 resp.sendRedirect("default.jsp");
             }
@@ -106,10 +101,12 @@ public class UserAction extends HttpServlet {
         PreparedStatement statement = null;
         ResultSet resultSet = null;
         try {
-            String sql = "SELECT * FROM  db_javaee.user WHERE mobile=? AND password=?";
+            String sql = "SELECT * FROM db_javaee.user WHERE mobile=? AND password=?";
             if (connection != null) {
                 statement = connection.prepareStatement(sql);
             } else {
+                req.setAttribute("message", "出现了一点情况...");
+                req.getRequestDispatcher("default.jsp").forward(req, resp);
                 return;
             }
             statement.setString(1, mobile);
@@ -117,7 +114,7 @@ public class UserAction extends HttpServlet {
             resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 req.getSession().setAttribute("nick", resultSet.getString("nick"));
-                resp.sendRedirect("student?action=queryAll");
+                resp.sendRedirect("student?action=queryAll"); // ***
             } else {
                 req.setAttribute("message", "手机号或密码错误");
                 req.getRequestDispatcher("default.jsp").forward(req, resp);
@@ -129,12 +126,12 @@ public class UserAction extends HttpServlet {
         }
     }
 
-
     private void logout(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.getSession().invalidate();
         resp.sendRedirect("default.jsp");
     }
-        @Override
+
+    @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         doPost(req, resp);
     }
